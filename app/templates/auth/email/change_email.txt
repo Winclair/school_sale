@@ -1,0 +1,10 @@
+Dear {{user.username}}:
+     you will change your email please click on the following link to confirm:
+
+    {{ url_for('auth.change_email', token=token, _external=True ) }}
+
+    Sincerely,
+
+    The flask blog team.
+
+    If you never try to register flask blog, you can just neglect.
