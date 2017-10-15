@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    {{ super() }}
+<style type="text/css">
+    body{
+    	background-color: #CDCD9A;
+    }
+  	.show_grid{
+  		background-color: white;
+  		outline: 2px double white;
+  		position: absolute;
+  		left: 35%;
+  		top:20%;
+  		width: 600px;
+  		display: grid;
+
+  	}
+  	.show_head{
+  		padding-left: 5px;
+  		border-bottom:2px double #F0FFF0;  
+  		width: 100%;
+  		display: grid;
+  		grid-template-rows: 2fr 1fr: 
+  	}
+  	.show_text{
+  		padding: 10px 10px 0px 10px;
+  		border-bottom:2px double #F0FFF0; 
+  		font-size: small;
+  		font-family: FangSong_GB2312;
+      font-style: #BEBEBE;
+  	}
+  	.show_image{
+  		padding: 15px 10px 5px 10px;
+  		border-bottom:2px double #F0FFF0; 
+  		display: grid;
+  		grid-template-columns: 1fr 1fr 1fr;
+  	}
+  	img{
+  		width: 100%;
+  	}
+
+  	.show_bottom{
+  		padding: 60px 10px 5px 10px;
+
+  	}
+
+  	.left_grid{
+  		background-color: white;
+  		outline: 2px double white;
+  		position: absolute;
+  		left: 10%;
+  		top:20%;
+  		width: 250px;
+  		display: grid;
+  	}
+
+  	.left_head{
+  		padding: 10px 10px 30px 10px;
+  		border-bottom:2px double #F0FFF0;
+  		width: 100%;
+  		display: grid;
+  		grid-template-rows: 15px 50px 10px;
+  		grid-gap:5px;
+
+  	}
+  	.left_body{
+  		display: grid;
+  		grid-template-rows: 20px 20px 20px 20px;
+  		grid-gap: 10px;
+  		font-size: small;
+
+  	}
+  	.more{
+  		overflow: hidden;
+  	}
+
+
+  	#bgbox{
+  		text-align: center;
+   		white-space: nowrap;
+		position:absolute;left:0;top:0;opacity:1.0;background-color: #FFFFDF;
+		z-index: 1;}
+		
+   	#bgbox:before{
+   		content: '';
+  		display: inline-block;
+  		vertical-align: middle;
+  		margin-right: -0.25em; 
+   }
+	#boxImg {
+  		z-index: 2;
+	}
+</style>
+{% endblock %}    
+
+{% block title %}detail{% endblock %}
+
+
+
+{% block page_content %}
+	<div class="show_grid">
+  		<div class="show_head">
+  			<p style="font-size: x-large;">{{goods.title}}</p>
+  			<p style="font-size: medium; width: 100%">
+  				<span style="left: 4%;position: relative;">{{goods.date_stamp()}}</span>
+  				<span style="left:64%;position: relative;">
+  					{% if goods.seller == current_user %}
+  					<a href="{{url_for('main.sell', school=goods.school)}}">edit</a>&#12288;&#12288;
+  					<small><button id="delbtn" style="color: #FF7575;" name="{{goods.id}}">delete</button></small>
+  					{% endif %}
+  				</span>
+  			</p>
+  		</div>
+
+  		<div class="show_text" >
+  			{{ goods.describe }}
+  			<p style="padding-top: 30px;"><font color="red" size="2px">点击图片查看全图</font></p>
+  		</div>
+
+  		<div class="show_image">
+            {% for image_url in goods.img_urls() %}
+  			<img src="{{ image_url }}" name="image">
+            {% endfor %}
+  		</div>
+
+  		<div class="show_bottom">
+  			<p style="font-size: small;">
+  				<span style="left: 1%;position: relative;">分类：{{ goods.kind }}</span>
+  				<span style="left:80%;position: relative;"><a href="{{url_for('main.chat',seller_id=goods.seller.id)}}">举报</a></span>
+  			</p>
+  		</div>
+
+  </div>
+
+  	<div class="left_grid">
+  		<div class="left_head">
+  			<div style="font-size: large;">{% if goods.seller.nickname %}{{goods.seller.nickname}}
+            {% else %}{{goods.seller.username}}{% endif %}</div>
+  			<div><a href="{{url_for('user.user', username=goods.seller.username)}}">
+                <img src="{{goods.seller.img_url()}}" style="width: 25%"></a>
+      			<span style="position: relative;left: 40%;">
+					{% if current_user != goods.seller%}
+      				<button id="chat-btn" type="button" class="btn btn-primary" style="width: 25%;height: 30px;">Send</button>
+      			    {% endif %}
+                </span>
+  			</div>
+  			<p style="font-size: x-small;padding-top:15px; ">{{goods.seller.school}}</p>
+  		</div>
+
+  		<div class="left_body">
+  			<p>更多出售...</p>
+  			<div class="more"><a href=""></a></div>
+  		    
+        </div>
+  	</div>
+    
+    <!--    -->
+  	<div id="bgbox" style="display: none;">
+  		<img src="" id="boxImg">
+  	</div>
+
+<!--delete event -->
+    <form action="{{url_for('main.delete')}}" id="delete_form" enctype="multipart/form-data"
+          style="display: none;" method="GET">
+        <input type="text" id="goods_id" name="goods_id" >
+    </form>
+<script src="/static/js/jquery-3.2.1.js"></script>
+<script src="/static/js/layer-v3.1.0/layer/layer.js"></script>
+<script type="text/javascript">
+    // deal form
+    var form = document.getElementById('delete_form');
+    var id_text = document.getElementById('goods_id');
+
+    $('#delbtn').on('click', is_delete);
+    function is_delete(e){
+        layer.confirm('确定删除吗？', 
+            {btn: ['是','取消'] }, 
+            function(){
+                id_text.value = e.target.name;
+                form.submit();
+        });
+    }
+
+    //show image
+
+    var images = document.getElementsByName('image');
+	for (var i=0;i<images.length; i++){
+		images[i].onclick=show;
+	}
+
+	var bgbox = document.getElementById('bgbox');
+	bgbox.style.width = document.documentElement.clientWidth + "px";
+	bgbox.onclick = close;
+	
+	var boxImg = document.getElementById('boxImg');
+	boxImg.onmousewheel=zoom;
+	
+	function zoom(e){
+    	boxImg.width = 3*e.wheelDelta/12 + boxImg.width;
+    	boxImg.height = 3*e.wheelDelta/12 + boxImg.height;
+    }
+
+	function show(e){
+		bgbox.style.display='block';
+		boxImg.src=e.target.src;
+		bgbox.style.height =Math.max((boxImg.height+50), document.documentElement.clientHeight)+"px";
+	}
+
+	function close(e){
+		bgbox.style.display='none';
+	}
+
+//show chat
+  $('#chat-btn').on('click', show_chat);
+
+  function show_chat(){
+    {% if current_user.is_authenticated %}
+        layer.open({
+            type: 2,
+            title: 'chat',
+            area: ['500px', '550px'],
+            content: ['{{ url_for('main.chat', seller_id=goods.seller.id) }}'],
+            cancel: function(index, layero){
+                var iframeWin = window[layero.find('iframe')[0]['name']];
+                iframeWin.open("about:blank","_self").close();
+      		}
+        });
+    {% else %}
+        layer.msg('请先登录.',{
+            area: ['300px', '300px']
+        });
+    {% endif %}
+  }
+  	//分隔符用div, 而不是p
+</script>
+{% endblock %}    
