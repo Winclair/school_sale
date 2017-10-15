@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% import '_macros.html' as macros %}
+
+{% block head %}
+    {{ super() }}
+{% endblock head %}
+
+{% block title %}{{school}}{% endblock %}
+
+{% block right_navbar %}
+    <li><a href="{{url_for('main.sell', school=school)}}">Sell</a></li>
+{% endblock %}
+
+{% block page_content %}
+    {% include '_goods.html' %}
+    <div class="pagination" style="position: absolute; right: 10%;margin-bottom: 100px">
+        {{ macros.pagination_widget(pagination, 'main.schools', school=school) }}
+    </div>
+
+
+    <script type="text/javascript">
+        var card = document.getElementsByClassName('card');
+        var pagination = document.getElementsByClassName('pagination');
+        pagination[0].style.top = (parseInt(card.length/4) + 1.7 )*300+ 'px';
+    </script>
+
+{% endblock page_content %}
+
+
+

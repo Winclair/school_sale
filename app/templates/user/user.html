@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    {{ super() }}
+<style type="text/css">
+  body{
+    background-color: #F0FFF0;
+  }
+
+  .user{
+    padding: 10px; 
+    position: absolute;
+    border: double white;
+    background-color: white;
+    left: 20%;
+    width: 700px;
+    display: grid;
+  }
+  .user_head{
+    display: grid;
+    border-bottom: double #F0FFF0;
+    grid-template-columns: 1fr 4fr;
+  }
+  .user_body{
+    padding-top:30px; 
+    display: grid;
+  }
+  .title{
+    padding: 20px;
+    border-top: double #F0FFF0;
+  } 
+</style>
+{% endblock %}
+
+{% block title %}{{ user.nickname or user.username}}'home {% endblock %}
+
+{% block right_navbar %}
+     <ul class="nav navbar-nav navbar-right">
+        {% if current_user.username == user.username %}
+        <li><a href="{{ url_for('user.edit_profile') }}">Edit</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ url_for('auth.change_password') }}">Change Password</a></li>
+                    <li><a href="{{ url_for('auth.change_email_request') }}">Change Email</a></li>
+                    <li><a href="{{ url_for('auth.reset_password_request') }}">Reset Password</a></li>
+               </ul>
+            </li>
+        {% else %}
+        <li><a href="{{ url_for('main.chat', seller_id=user.id) }}">Send</a></li>
+        {% endif %}
+     </ul>
+{% endblock %}
+
+{% block page_content %}
+    <div class="user">
+        <div class="user_head">
+            <div>
+                <img src="{{ user.img_url() }}" style="width:100%;">
+            </div>
+            <div>
+                <div style="font-size: x-large;">
+                    {% if user.nickname %}{{user.nickname}}{% else %}{{user.username}}{% endif %}
+                    <span style="position: relative;left:75%;font-size: medium;">
+                    {% if current_user == user %}<a href="{{url_for('user.edit_profile')}}">edit</a>
+                    {% endif %}</span>
+                </div>
+                <div style="font-size: medium;">{{  user.school   }} | {{ user.campus   }} | {{user.faculty   }} | {{user.gender}}</div>
+                <div style="padding-top: 5px;"><font color="#9D9D9D" size="2.5px">{{user.about_me}}</font></div>
+            </div>
+        </div>
+
+        <div class="user_body">
+            <div style="font-size: medium;">全部booker...</div>
+            {% for g in user.goods %}
+            <div class="title"><a href="{{url_for('main.details', g_id=g.id)}}">{{g.title}}</a></div>
+            {% endfor %}    
+        </div>
+    </div>
+{% endblock %}

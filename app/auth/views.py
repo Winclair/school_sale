@@ -103,8 +103,6 @@ def change_email_request():
     form = ChangeEmailForm()
     if form.validate_on_submit():
         new_email = form.new_email.data
-        print('#####################')
-        print(form.password)
         if current_user.verify_password(form.password.data):
             token = current_user.generate_new_email_token(new_email)
             send_mail('Validate your new email', 'auth/email/change_email', [new_email],

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block page_content %}
+<style type="text/css">
+	  .s-container{
+	  	position: absolute;
+	  	left: 30%;
+	  	top:20%;
+	  	width: 500px;
+	  }
+	  .entry{
+	    padding-top:10px;
+	  	padding-bottom: 10px;
+	  }
+  </style>
+<div class="s-container">
+    {% for sm in sclmdls %}
+  		<div class="entry">
+  			<font size="3px"><a href="{{ url_for('main.schools', school=sm.pinyin)}}">{{ sm.name }}</a></font>
+  		</div>
+    {% endfor %}
+
+
+</div>
+{% endblock %}

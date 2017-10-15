@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+<style type="text/css">
+        body{
+        background-color: #CDCD9A;
+    }
+    .grid-container{
+        position: relative;
+        left: 30%;
+        width:500px;
+        height: 600px;
+        display: grid;
+        grid-template-rows: 1fr 3fr 500px 1.5fr 1fr ;
+        grid-gap: 3px;
+
+    }
+    form{
+        max-width: 60%;
+    }
+    img{
+        width: 400;
+        height: 400;
+    }
+    .draw{
+        display: grid;
+        grid-template-columns:1fr 1fr 1fr;
+        grid-template-rows:1fr 1fr 1fr;
+        grid-gap:2px;
+        border: medium solid black;
+    }
+    .item{
+        height: 100%;
+        background: #f7f7f7;
+    }
+    .card{
+        background-color: #f7f7f7;
+        width: 100%;
+    }
+    .edge{
+        border:thin solid blue;
+        margin-top: 3px;
+        background-color: #A6FFFF;
+    }
+</style>
+{% endblock %}
+{% block title %}Sell{% endblock%}
+
+{% block page_content %}
+    <div class="container" >
+        <form id="primary" enctype="multipart/form-data" class="grid-container" method="post">
+            <div class="form-group form-inline">
+                <label>概述：<input type="text" name="title" placeholder="不要超过20个字！" class="form-control" required/>
+            </label>
+                <label style="position: relative;left: 25%;">分类：<select name="kind" class="form-control">
+                    <option value="1">Book</option>
+                    <option value="2">Other</option>
+                    </select> 
+                </label>
+            </div>
+
+            <div class="form-group">
+                <textarea name="describe" rows="4" placeholder="please enter your describe" class="form-control" required></textarea>
+            </div>
+        
+            <div class="draw">
+                <div class="item"><img name="image"  class="card"></div>
+                <div class="item"><img name="image"  class="card"></div>
+                <div class="item"><img name="image"  class="card"></div>
+                <div class="item"><img name="image"  class="card"></div>
+                <div class="item"><img name="image"  class="card"></div>
+                <div class="item"><img name="image"  class="card"></div>
+                <div class="item"><img name="image"  class="card"></div>
+                <div class="item"><img name="image"  class="card"></div>
+                <div class="item"><img name="image"  class="card"></div>
+            </div>
+
+            <div class="form-inline edge">
+                <label>Choose File:
+                <input type="file" name="file0" accept='image/*'  id="file" style="width: 50%"  />
+                        <input type="file" name="file1" accept='image/*'  style="width:50%;display:none;"/>
+                        <input type="file" name="file2" accept='image/*'  style="width:50%;display:none;"/>
+                        <input type="file" name="file3" accept='image/*'  style="width:50%;display:none;"/>
+                        <input type="file" name="file4" accept='image/*'  style="width:50%;display:none;"/>
+                        <input type="file" name="file5" accept='image/*'  style="width:50%;display:none;"/>
+                        <input type="file" name="file6" accept='image/*'  style="width:50%;display:none;"/>
+                        <input type="file" name="file7" accept='image/*'  style="width:50%;display:none;"/>
+                        <input type="file" name="file8" accept='image/*'  style="width:50%;display:none;"/>
+                </label>
+                <button id="upload" type="button" class="btn btn-primary" style="width: 20%">Upload File</button>
+            </div>
+          <button form="primary" type="submit" class="btn btn-primary" style="width: 20%">Done</button>
+        </form>
+    </div>
+
+    <script type="text/javascript">
+            var upload = document.getElementById('upload');
+            var files = document.querySelectorAll("[type='file']");
+            var images = document.getElementsByName("image");
+            var form = document.getElementById("file-form");
+            
+            function displayImage(i){
+                var oFReader = new FileReader();
+                oFReader.readAsDataURL(files[i].files[0]);
+                oFReader.onloadend = function () {
+                src = oFReader.result;
+                images[i].src = src;
+                images[i].height=images[i].width;
+            }
+            }
+
+            var i=0;
+            upload.onclick = function(e){
+                if(files[i].value){
+                    displayImage(i);
+                    files[i].style.display="none";
+                    i++;                                                
+                    if(i<9){
+                        files[i].style.display="block";
+                    }               
+                }
+            }
+            /*  1. form 里面所有需要发送的元素必须有非空name值。
+                  2. 
+            */ 
+        </script>
+{% endblock %}
+
+
+

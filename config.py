@@ -12,8 +12,10 @@ class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     FLASKY_MAIL_SUBJECT_PREFIX = '[Flasky]'
     FLASKY_MAIL_SENDER = '1996sinclair@gmail.com'
-    FLASKY_ADMIN = 'FLASKY_ADMIN'
+    FLASKY_ADMIN = '1996sinclair@gmail.com'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    DATABASE_DIR = os.path.join(basedir, 'database')
+    GOODS_PER_PAGE = 24
 
     @staticmethod
     def init_app(app):

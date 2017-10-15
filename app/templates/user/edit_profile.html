@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Edit-Profile{% endblock%}
+
+{% block page_content %}
+<style>
+    .edit_container{
+        display:grid;
+     }
+</style>
+
+
+    <div style="position:absolute;left:20%;">
+        <div class="page-header">
+            <h1>Edit</h1>
+        </div>
+        <form id="primary" enctype="multipart/form-data" class="grid-container" method="POST">
+
+            <div class="form-group" >
+                <label>{{form.user_image.label}}:{{ form.user_image }}</label>
+  		    </div>
+            <div class="form-group form-inline">
+  			    <label>{{form.nickname.label}}:{{ form.nickname(class="form-control") }}</label>
+  			    <label>{{form.gender.label}}: {{ form.gender(class="form-control") }}</label>
+  		    </div>
+  		    <div class="form-group form-inline">
+  			    <label>{{form.school.label}}:{{ form.school(class="form-control") }}</label>
+  			    <label>{{form.campus.label}}:{{ form.campus(class="form-control") }}</label>
+  			    <label>{{form.faculty.label}}:{{ form.faculty(class="form-control") }}</label>
+  		    </div>
+  		    <div class="form-group" >
+                {{ form.about_me(class="form-control", rows='4') }}
+  		    </div>
+
+  		    <div class="form-group btn btn-primary" >
+                {{ form.submit(class="form-control")}}
+            </div>
+
+  	    </form>
+    </div>
+{% endblock %}
+
