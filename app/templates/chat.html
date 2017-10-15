@@ -1,0 +1,152 @@
+{% extends "bootstrap/base.html" %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+<style type="text/css">
+
+  	.chat-container{
+        position: absolute;
+        padding:3px;
+  	    width: 500px;
+  		border:double 2px #F0FFF0;
+  	}
+
+  	.chat{
+      padding-top: 10px;
+      padding-bottom: 10px;
+      background-color: #F0F0F0;
+  	  width: 100%;
+      height: 450px;
+      overflow-y: scroll;
+  	}
+  	.left-msg{
+  		background-color: white;
+  		position: relative;
+  		-webkit-border-radius: 5px;
+  		float: left;
+  		max-width: 70%;
+      padding: 5px;
+  		left: 10px;
+  	}
+  	.left-msg:before{
+  		content: '';
+  		width: 0;
+   		height: 0;
+   		position: absolute;
+   		right: 100%;
+    	top: 40%;
+    	border-top: 5px solid transparent;
+    	border-right: 10px solid white;
+    	border-bottom: 5px solid transparent;
+  	}
+  	.right-msg{
+  		float: right;
+  		background-color: #53FF53;
+      position: relative;
+      -webkit-border-radius: 5px;
+      max-width: 70%;
+      padding: 5px;
+      right: 10px;
+  	}
+  	.right-msg:before{
+      content: '';
+      width: 0;
+      height: 0;
+      position: absolute;
+      left: 100%;
+      top: 40%;
+      border-top: 5px solid transparent;
+      border-left: 10px solid #53FF53;
+      border-bottom: 5px solid transparent;
+    }
+    .sep{
+      float: left;
+      width: 100%;
+      height: 20px;
+    }
+  </style>
+
+<div class="chat-container">
+    <div class="chat">
+        {% for msg in messages %}
+        <div class="sep"></div>
+        {% if msg[0]|int() == current_user.id %}
+            <div class="right-msg">{{ msg[1] }}</div>
+        {% else %}
+            <div class="left-msg">{{ msg[1] }}</div>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="form-group form-inline">
+        <input id='msg-text' type="text" name="message" style="width: 83%;display:inline" class="form-control">
+        <button id="msg-btn" type="button" class="btn btn-primary" style="width: 13%;display:inline">发送</button>
+    </div>
+
+</div>
+
+<script src="/static/js/jquery-3.2.1.js"></script>
+<script src="/static/js/layer-v3.1.0/layer/layer.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    var namespace = '/chat';
+    var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+
+    socket.on('connect', function() {
+        socket.emit('join');
+    });
+
+
+    function update(msg, position){
+        var sepnode = '<div class="sep"></div>';
+        var msgnode = "<div class='" + position + "-msg'>" + msg + "</div>";
+        $('.chat').append(sepnode);
+        $('.chat').append(msgnode);
+        $('.chat').scrollTop($('.chat').get(0).scrollHeight)
+        $('#msg-text').val('');
+    }
+
+
+    // get message
+    socket.on('to_client', function(data){
+        msg = data.msg;
+        if(data.id == {{ seller_id }} ){
+            update(msg, "left");
+        }
+
+    });
+
+
+    $('#msg-btn').click(function(){
+
+        var msg = $('#msg-text').val();
+        if(msg){
+            update(msg, "right");
+            socket.emit('msg_to_server', {'msg': msg });
+        }
+    });
+    $('#msg-text').keypress(function(e){
+      if(e.keyCode==13){
+        var msg = $('#msg-text').val();
+        if(msg){
+            update(msg, "right");
+            socket.emit('msg_to_server', {'msg': msg });
+        }
+      }
+    });
+
+
+    window.onbeforeunload = function () {
+         socket.emit('unload');
+
+    };
+});
+
+</script>
+
+
+{% endblock%}
