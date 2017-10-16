@@ -1,0 +1,100 @@
+
+
+<style type="text/css">
+    .grid-container{
+        position: absolute;
+        left: 20%;
+        top: 20%;
+        display: grid;
+        grid-template-rows: repeat(6, 300px);
+        grid-template-columns: 230px 230px 230px 230px;
+        grid-gap: 15px;
+        grid-row-gap: 15px;
+    }
+    .goods-header{
+        background-color: #f7f7f7;
+        height: 25%;
+        display: grid;
+        grid-template-rows: 1fr 5fr;
+        grid-template-columns: 1fr 1fr;
+        border-bottom: thin solid #D0D0D0;
+        padding: 5px;
+    }
+    
+    .goods-body{
+        margin: 10px;
+        height: 75%;
+        display: grid;
+        grid-template-rows: 23% 62% 10%;
+    }
+    .goods-bottom{
+        display: grid;
+        grid-template-columns: 1fr 1fr; 
+    }
+    .delbtn{
+        color: #FF7575;
+    }
+  </style>
+
+  <div class="grid-container">
+        {% for g in goods %}
+        <div class="card" style="border:thin solid #D0D0D0;">
+            <div class="goods-header" style="height: 25%;">
+                <font size="3.7px">{% if g.seller.nickname -%}{{g.seller.nickname}} {% else %} {{g.seller.username}}{%endif%}
+                </font>
+                <font style="color: #4A4AFF; direction: rtl;" >{{g.kind}}</font>
+                <a href="{{url_for('user.user', username=g.seller.username)}}">
+                    <img class="d-flex mr-3" src="{{ g.seller.img_url() }}" style="width: 40%;">
+                </a>
+                <small class="text-muted" style="direction: rtl;">{{ g.date_stamp() }}</small>
+            </div>    
+                
+            <div class=" goods-body">
+                <p  style="overflow: hidden;">{{ g.describe }}</p>
+                <img src="{{ g.img_urls()[0] }}" alt="" style="width: 90%; height: 100%;">
+                <p class="goods-bottom">
+                   <small><a href="{{url_for('main.details', g_id=g.id)}}">View details &raquo;</a></small>
+                   <small style="direction: rtl;"><button class="delbtn" name="{{g.id}}">{% if current_user==g.seller %}delete{% endif %}</button></small>
+                </p>
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+        <!--delete event -->
+        <form action="{{url_for('main.delete')}}" id="delete_form" enctype="multipart/form-data" style="display: none;" method="GET">
+            <input type="text" id="goods_id" name="goods_id" >
+        </form>
+
+
+    </div>
+
+    <script src="/static/js/jquery-3.2.1.js"></script>
+    <script src="/static/js/layer-v3.1.0/layer/layer.js"></script>
+    <script type="text/javascript">
+        var form = document.getElementById('delete_form');
+        var id_text = document.getElementById('goods_id');
+        var delbtn = document.getElementsByClassName('delbtn');
+
+        for(var i=0;i<delbtn.length;i++){
+            delbtn[i].onclick = is_delete;
+        }
+
+        function is_delete(e){
+            layer.confirm('确定删除吗？',
+                {btn: ['是','取消'] }, 
+                function(){
+                    id_text.value = e.target.name;
+                    form.submit();
+            });
+        } 
+    </script>
+
+
+
+
+
+
+
+

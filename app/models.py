@@ -222,6 +222,23 @@ class AnonymousUser(AnonymousUserMixin):
     def img_url(self):
         return '/static/imgs/header.png'
 
+URregister = db.Table('URregister', 
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('room_id', db.Integer, db.ForeignKey('rooms.id'))
+    )
+
+
+# chat room
+class Room(db.Model):
+    __tablename__ = 'rooms'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True, index=True)
+    unreaded = db.Column(db.Integer)
+    time_stamp = db.Column(db.DateTime, default=datetime.utcnow())
+    users = db.relationship('User', secondary=URregister,
+                            backref=db.backref('rooms', lazy='dynamic'),
+                            lazy='dynamic')
+
 
 class SchoolModel(db.Model):
     REGULAR = 0
