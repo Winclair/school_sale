@@ -5,32 +5,33 @@
     {{ super() }}
 {% endblock head %}
 
-{% block title %}{{school}}{% endblock %}
+{% block title %}outbook{% endblock %}
 
 {% block right_navbar %}
     <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">All Faculties<b class="caret"></b></a>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Other Faculties<b class="caret"></b></a>
         <ul class="dropdown-menu">
             {% for key in sholmdl.faculties.keys() %}
+            {% if sholmdl.faculties[key] != faculty %}
             <li><a href="{{ url_for('main.faculties', school=sholmdl.pinyin, faculty=sholmdl.faculties[key]) }}">
                 {{key}}</a></li>
+            {% endif %}
             {% endfor %}
         </ul>
     </li>
-    <li><a href="{{url_for('main.sell', school=sholmdl.pinyin, faculty=-1)}}">Sell</a></li>
-
+    <li><a href="{{url_for('main.sell', school=sholmdl.pinyin, faculty=faculty)}}">Sell</a></li>
 {% endblock %}
+
 
 {% block page_content %}
     <div class="page-header">
-        <h1>{{sholmdl.name}}</h1>
+        <h1>{{sholmdl.name}}-{{sholmdl.faculty_name(faculty)}}</h1>
     </div>
 
     {% include '_goods.html' %}
     <div class="pagination" style="position: absolute; right: 10%;margin-bottom: 100px">
-        {{ macros.pagination_widget(pagination, 'main.schools', school=school) }}
+        {{ macros.pagination_widget(pagination, 'main.faculties', school=sholmdl.pinyin, faculty=faculty) }}
     </div>
-
 
     <script type="text/javascript">
         var card = document.getElementsByClassName('card');
@@ -39,6 +40,3 @@
     </script>
 
 {% endblock page_content %}
-
-
-

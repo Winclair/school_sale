@@ -15,8 +15,7 @@ class Nameform(FlaskForm):
 
 
 class SearchForm(FlaskForm):
-    search = StringField("search school.", validators=[DataRequired(),
-                                                       Length(1, 20, message='最多字数为20字数')])
+    search = StringField(validators=[DataRequired(), Length(1, 20, message='最多字数为20字数')])
     submit = SubmitField('GO')
 
 

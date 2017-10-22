@@ -5,6 +5,7 @@
 {% block head %}
     {{ super() }}
     <link rel="icon" href="/static/blog.png" type="image/x-icon">
+    <link href="/static/css/msg_listen.css" rel="stylesheet">
 {% endblock %}
 
 {% block navbar %}
@@ -25,7 +26,15 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="{{ url_for('main.index') }}">Home</a></li>
+                {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('main.chatmsg') }}">Message{% if current_user.all_unread() %}
+                    <span class="nav-counter nav-counter-red" style="top: 15px;">{{ current_user.all_unread()}}</span>
+                    {% endif %}
+                    </a>
+                </li>
+                {% endif %}
             </ul>
+
             <ul class="nav navbar-nav navbar-right">
             {% block right_navbar %}
                 {% if not current_user.is_authenticated %}

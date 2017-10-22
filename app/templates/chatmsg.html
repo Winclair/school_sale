@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+<style type="text/css">
+
+.listen{
+  border-top: #8E8E8E;
+  width: 500px;
+  padding: 3px;
+  position:absolute;
+  left:35%;
+
+}
+.msg{
+  width: 100%;
+  height: 45px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  border-bottom: 2px double #F0FFF0;
+
+}
+
+img{
+  width: 50px;
+  height: 40px;
+}
+
+</style>
+
+<div class="page-header">
+    <h1>Recent Chat</h1>
+</div>
+
+<div class="listen">
+    {% for chat in chats %}
+    {% set user = User.query.get(chat.to) %}
+    <div class="msg"><a href="{{url_for('user.user', username=user.username) }}" class="nav-link">
+      <img src="{{ user.img_url() }}">
+      {% if chat.unread %}
+      <div class="nav-counter nav-counter-red" style="top:-8px;right:15px">{{chat.unread}}</div>
+      {% endif %}</a><span style="position:relative;top:-5px">{{ user.username }}</span>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

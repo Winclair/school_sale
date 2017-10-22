@@ -113,11 +113,7 @@ $(document).ready(function() {
 
     // get message
     socket.on('to_client', function(data){
-        msg = data.msg;
-        if(data.id == {{ seller_id }} ){
-            update(msg, "left");
-        }
-
+        update(data.msg, "left");
     });
 
 
@@ -141,8 +137,7 @@ $(document).ready(function() {
 
 
     window.onbeforeunload = function () {
-         socket.emit('unload');
-
+        socket.emit('unload');
     };
 });
 

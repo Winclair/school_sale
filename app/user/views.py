@@ -29,6 +29,9 @@ def edit_profile():
             form.user_image.data.save(path)
         current_user.nickname = form.nickname.data
         current_user.school = form.school.data
+        current_user.campus = form.campus.data
+        current_user.faculty = form.faculty.data
+        current_user.gender = form.gender.data
         current_user.about_me = form.about_me.data
         current_user.save()
         flash('Edit Successful')
@@ -36,5 +39,8 @@ def edit_profile():
 
     form.nickname.data = current_user.nickname
     form.school.data = current_user.school
+    form.campus.data = current_user.campus
+    form.faculty.data = current_user.faculty
+    form.gender.data = current_user.gender
     form.about_me.data = current_user.about_me
     return render_template('user/edit_profile.html', form=form)

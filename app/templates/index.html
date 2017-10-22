@@ -6,7 +6,6 @@
     {% block title %}Blog{% endblock %}
 </head>
 
-
 <body> 
 
 <!-- display local time -->
@@ -17,7 +16,11 @@
 <!-- 上面不能在游览器中实现-->
 
 {% block page_content %}
-    <div class="container">
+
+    <div class="page-header">
+        <h1>Search School</h1>
+    </div>
+    <div class="container" style="position:absolute;left:30%">
     	<div class="starter-template col-md-6">
 			{{ wtf.quick_form(form)}}    		
     	</div>

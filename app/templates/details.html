@@ -4,7 +4,7 @@
     {{ super() }}
 <style type="text/css">
     body{
-    	background-color: #CDCD9A;
+    	background-color: #F0FFF0;
     }
   	.show_grid{
   		background-color: white;
@@ -120,7 +120,7 @@
 
   		<div class="show_image">
             {% for image_url in goods.img_urls() %}
-  			<img src="{{ image_url }}" name="image">
+  			<img src="{{ image_url }}" name="image" style="width:180px;height:180px;">
             {% endfor %}
   		</div>
 
@@ -138,7 +138,7 @@
   			<div style="font-size: large;">{% if goods.seller.nickname %}{{goods.seller.nickname}}
             {% else %}{{goods.seller.username}}{% endif %}</div>
   			<div><a href="{{url_for('user.user', username=goods.seller.username)}}">
-                <img src="{{goods.seller.img_url()}}" style="width: 25%"></a>
+                <img src="{{goods.seller.img_url()}}" style="width: 60px;height:60px;"></a>
       			<span style="position: relative;left: 40%;">
 					{% if current_user != goods.seller%}
       				<button id="chat-btn" type="button" class="btn btn-primary" style="width: 25%;height: 30px;">Send</button>
@@ -220,7 +220,7 @@
             type: 2,
             title: 'chat',
             area: ['500px', '550px'],
-            content: ['{{ url_for('main.chat', seller_id=goods.seller.id) }}'],
+            content: ['{{ url_for('main.chat', seller_id=goods.seller.id) }}', 'no'],
             cancel: function(index, layero){
                 var iframeWin = window[layero.find('iframe')[0]['name']];
                 iframeWin.open("about:blank","_self").close();

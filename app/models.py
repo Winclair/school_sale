@@ -33,6 +33,7 @@ class Role(db.Model):
     users = db.relationship('User', backref='role')
     # only user's default is True, other is false
     default = db.Column(db.Boolean, default=False, index=True)
+
     # the value of permissions
     # For instants, User has the permissions of follow, comment, write articles
     # so it's the value of permissions is 0b00000111
@@ -65,7 +66,8 @@ class Goods(db.Model):
     describe = db.Column(db.Text())
     image_dir = db.Column(db.String(64))
     school = db.Column(db.String(32), index=True)
-    time_stamp = db.Column(db.DateTime, index=True, default=datetime.utcnow())
+    faculty = db.Column(db.Integer, index=True)
+    time_stamp = db.Column(db.DateTime, default=datetime.utcnow())
     seller_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def img_urls(self):
@@ -85,7 +87,7 @@ class Goods(db.Model):
         db.session.commit()
 
     def delete(self):
-        shutil.rmtree(r'static/imgs/{}'.format(self.image_dir))
+        shutil.rmtree(r'./app/static/imgs/{}'.format(self.image_dir))
         db.session.delete(self)
         db.session.commit()        
 
@@ -109,11 +111,15 @@ class User(UserMixin, db.Model):
     # TODO: String(64), 64 bit or 64 words?
     image_url = db.Column(db.String(64))
     nickname = db.Column(db.String(64))
-    school = db.Column(db.String(64), index=True)
+    school = db.Column(db.String(64))
     campus = db.Column(db.String(64))
     faculty = db.Column(db.String(64))
     gender = db.Column(db.String(8))
     about_me = db.Column(db.Text())
+
+    # about chat
+    chats = db.relationship('Chat', backref='my', lazy='dynamic')
+
 
     def __init__(self, **kwargs):
         # TODO: what is mean?
@@ -208,6 +214,18 @@ class User(UserMixin, db.Model):
         db.session.commit()
         return True
 
+    def all_unread(self):
+        count = 0
+        for chat in self.chats:
+            count += chat.unread
+        return count
+
+    def get_chat(self, to):
+        for c in self.chats:
+            if c.to == to:
+                return c
+
+
     def __repr__(self):
         return '<User %r>' % self.username
 
@@ -222,22 +240,22 @@ class AnonymousUser(AnonymousUserMixin):
     def img_url(self):
         return '/static/imgs/header.png'
 
-URregister = db.Table('URregister', 
-    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
-    db.Column('room_id', db.Integer, db.ForeignKey('rooms.id'))
-    )
+    def all_unread(self):
+        return 0
 
 
 # chat room
-class Room(db.Model):
-    __tablename__ = 'rooms'
+class Chat(db.Model):
+    __tablename__ = 'chats'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True, index=True)
-    unreaded = db.Column(db.Integer)
-    time_stamp = db.Column(db.DateTime, default=datetime.utcnow())
-    users = db.relationship('User', secondary=URregister,
-                            backref=db.backref('rooms', lazy='dynamic'),
-                            lazy='dynamic')
+    to = db.Column(db.Integer)
+    unread = db.Column(db.Integer, default=0)
+    time_stamp = db.Column(db.DateTime)
+    my_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 
 class SchoolModel(db.Model):
@@ -247,7 +265,8 @@ class SchoolModel(db.Model):
     __tablename__ = 'schools'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True, index=True)
-    pinyin = db.Column(db.String(64), index=True)
+    pinyin = db.Column(db.String(64), unique=True)
+    faculties = db.Column(db.PickleType)
     # lever 0 is regular college, lever 1 is junior college
     lever = db.Column(db.Integer)
 
@@ -255,6 +274,10 @@ class SchoolModel(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def faculty_name(self, faculty):
+        for key in self.faculties.keys():
+            if self.faculties[key] == faculty:
+                return key
 
 def topy(hans):
     return ''.join(lazy_pinyin(hans, style=Style.FIRST_LETTER))
@@ -289,7 +312,32 @@ def id_results(sentence):
     return sorted(reset, key=lambda i: result.count(i), reverse=True)
 
 
+def get_faculty():
+    print('begin...')
+    with open(r'C:\Users\Administrator\Desktop\faculties2.txt', 'r') as f:
+        last = f.readline().strip()
+        while 1:
+            if not last:
+                break
+            cut = last.split('-')
+            school = SchoolModel.query.filter_by(name=cut[0]).first()
+            if not school:
+                print(cut[0])
+                last = f.readline().strip()
+                continue
+            i = 0
+            school.faculties = {}
+            school.faculties[cut[1]] = i
 
+            while 1:
+                line1 = f.readline().strip()
+                cut1 = line1.split('-')
+                if not line1 or cut1[0] != cut[0]:
+                    last = line1
+                    school.save()
+                    break
+                i = i + 1
+                school.faculties[cut1[1]] = i
 
 
 
